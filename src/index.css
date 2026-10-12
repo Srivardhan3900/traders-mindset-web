@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   APPLE-STYLE DESIGN SYSTEM — Traders' Mindset
+   Philosophy: maximum restraint, perfect spacing, pure type
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* Pure Apple-dark palette */
+    --bg:        #000000;
+    --bg-1:      #0a0a0a;
+    --bg-2:      #111111;
+    --bg-3:      #1a1a1a;
+    --bg-4:      #222222;
+
+    --text-1:    #f5f5f7;   /* Apple white */
+    --text-2:    #a1a1a6;   /* Apple gray */
+    --text-3:    #6e6e73;   /* Apple muted */
+    --text-4:    #3a3a3c;   /* very muted */
+
+    --border:    rgba(255,255,255,0.08);
+    --border-md: rgba(255,255,255,0.12);
+
+    --accent:    #2997ff;   /* Apple blue */
+    --accent-alt: #34aadc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                 'SF Pro Text', 'Helvetica Neue', Inter, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    font-size: 17px;
+    line-height: 1.47059;
+    letter-spacing: -0.022em;
+  }
+
+  ::selection {
+    background: rgba(41, 151, 255, 0.3);
+    color: #f5f5f7;
+  }
+
+  ::-webkit-scrollbar { width: 0; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Apple-style heading sizes */
+  h1 { font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+  h2 { font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; }
+  h3 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+}
+
+/* ============================================================
+   COMPONENT LAYER
+   ============================================================ */
+@layer components {
+
+  /* ─── Buttons (Apple-style) ─── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           h-11 px-6 rounded-full text-sm font-medium tracking-tight
+           bg-[#2997ff] text-white
+           transition-all duration-200 ease-out
+           hover:bg-[#0077ed] hover:scale-[0.98]
+           active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black;
+    white-space: nowrap;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           h-11 px-6 rounded-full text-sm font-medium tracking-tight
+           border border-[rgba(255,255,255,0.15)] text-[#f5f5f7] bg-[rgba(255,255,255,0.06)]
+           transition-all duration-200 ease-out
+           hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.25)]
+           active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20;
+    white-space: nowrap;
+  }
+
+  .btn-text {
+    @apply inline-flex items-center gap-1.5
+           text-[#2997ff] text-sm font-medium
+           transition-colors duration-150
+           hover:text-[#0077ed]
+           focus-visible:outline-none;
+  }
+
+  /* ─── Apple card ─── */
+  .apple-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    transition: border-color 0.2s ease;
+  }
+
+  .apple-card:hover {
+    border-color: var(--border-md);
+  }
+
+  /* ─── Section containers ─── */
+  .section {
+    @apply relative py-24 md:py-32 lg:py-40;
+  }
+  .section-sm {
+    @apply relative py-16 md:py-20;
+  }
+  .wrap {
+    @apply max-w-[980px] mx-auto px-5 sm:px-8;
+  }
+  .wrap-wide {
+    @apply max-w-[1200px] mx-auto px-5 sm:px-8 lg:px-12;
+  }
+
+  /* ─── Eyebrow ─── */
+  .eyebrow {
+    @apply text-xs font-semibold tracking-[0.12em] uppercase text-[#6e6e73];
+    letter-spacing: 0.12em;
+  }
+
+  /* ─── Divider ─── */
+  .apple-divider {
+    @apply w-full h-px bg-[rgba(255,255,255,0.08)];
+  }
+
+  /* ─── Form inputs ─── */
+  .form-input {
+    @apply w-full px-4 py-3.5 rounded-xl text-sm font-normal
+           bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)]
+           text-[#f5f5f7] placeholder-[#3a3a3c]
+           transition-all duration-200
+           focus:outline-none focus:border-[rgba(41,151,255,0.6)]
+           focus:bg-[#1c1c1e] focus:ring-1 focus:ring-[rgba(41,151,255,0.2)];
+  }
+
+  .form-input-error {
+    @apply border-red-500/50 focus:border-red-400;
+  }
+
+  .form-label {
+    @apply block text-xs font-medium text-[#a1a1a6] mb-2 tracking-wide;
+  }
+
+  .form-error {
+    @apply flex items-center gap-1.5 text-xs text-red-400 mt-1.5;
+  }
+
+  /* ─── Option card (form choice) ─── */
+  .option-card {
+    @apply w-full text-left px-5 py-4 rounded-2xl
+           border border-[rgba(255,255,255,0.08)]
+           bg-[#111111] text-[#a1a1a6] text-sm
+           transition-all duration-200 ease-out
+           hover:border-[rgba(255,255,255,0.15)] hover:bg-[#1a1a1a] hover:text-[#f5f5f7]
+           cursor-pointer;
+  }
+
+  .option-card-selected {
+    @apply border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.06)] text-[#f5f5f7]
+           shadow-[0_0_0_1px_rgba(41,151,255,0.25)];
+  }
+
+  /* ─── Step progress ─── */
+  .step-active  { @apply bg-[#2997ff]; }
+  .step-done    { @apply bg-[#0055b3]; }
+  .step-inactive { @apply bg-[#2a2a2a]; }
+
+  /* ─── Badges ─── */
+  .badge-demo {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+           text-[10px] font-semibold tracking-wide uppercase
+           bg-amber-900/30 text-amber-400 border border-amber-700/30;
+  }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+@layer utilities {
+
+  /* ── Scroll-reveal (progressive enhancement) ── */
+  /* Default: visible (no-JS safe) */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* When JS activated */
+  .js-animated .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+                transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .js-animated .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .js-animated .d1 { transition-delay: 0.08s; }
+  .js-animated .d2 { transition-delay: 0.16s; }
+  .js-animated .d3 { transition-delay: 0.24s; }
+  .js-animated .d4 { transition-delay: 0.32s; }
+  .js-animated .d5 { transition-delay: 0.40s; }
+
+  /* ── Gradient text ── */
+  .text-apple-blue {
+    color: #2997ff;
+  }
+
+  .text-gradient {
+    background: linear-gradient(to right, #f5f5f7 60%, #a1a1a6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Background helpers ── */
+  .bg-noise {
+    position: relative;
+  }
+  .bg-noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEUAAAD8/vz08vT09PT8/Pz8/PwDtRyWAAAABnRSTlMAmgCaAJoAmoqRfgAAADFJREFUKM9jYBgFgx8AAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAAAAAP8GBgYAAKiSAgAAAABJRU5ErkJggg==");
+    background-size: 120px;
+    opacity: 0.015;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .js-animated .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .btn-primary, .btn-secondary {
+      transition: none;
+    }
+    html { scroll-behavior: auto; }
+  }
+}
