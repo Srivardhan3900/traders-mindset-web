@@ -1,47 +1,60 @@
+/// <reference types="youtube" />
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AlertTriangle, ChevronDown } from 'lucide-react';
 import { SITE_CONFIG } from '../config';
 
+// Extend window with the YouTube callback
 declare global {
   interface Window {
-    YT: typeof YT;
     onYouTubeIframeAPIReady?: () => void;
   }
 }
 
+
 interface VSLSectionProps {
-  onVideoEnded: () => void;
+  onVideoPlaying: () => void;
+  onVideoPaused:  () => void;
+  onVideoEnded:   () => void;
 }
 
-// ─── Isolated YouTube container ──────────────────────────────
-// The iframe is rendered OUTSIDE React's DOM tree to avoid
-// React's removeChild reconciliation conflicts with the YT API.
+// ─── Isolated YouTube player ──────────────────────────────────
+// Player DOM is created OUTSIDE React's tree to prevent removeChild conflicts.
 function YouTubePlayer({
   videoId,
   startSeconds,
+  onPlaying,
+  onPaused,
   onEnded,
 }: {
   videoId: string;
   startSeconds: number;
-  onEnded: () => void;
+  onPlaying: () => void;
+  onPaused:  () => void;
+  onEnded:   () => void;
 }) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YT.Player | null>(null);
-  const onEndedRef = useRef(onEnded);
-  onEndedRef.current = onEnded;
+  const mountRef   = useRef<HTMLDivElement>(null);
+  const playerRef  = useRef<YT.Player | null>(null);
+
+  // Keep callbacks current without re-running the effect
+  const onPlayingRef = useRef(onPlaying);
+  const onPausedRef  = useRef(onPaused);
+  const onEndedRef   = useRef(onEnded);
+  onPlayingRef.current = onPlaying;
+  onPausedRef.current  = onPaused;
+  onEndedRef.current   = onEnded;
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
-    // Create a standalone div OUTSIDE React to host the player
-    const playerHost = document.createElement('div');
-    playerHost.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
-    mount.appendChild(playerHost);
+    // Create a host div outside React's control
+    const host = document.createElement('div');
+    host.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+    mount.appendChild(host);
 
     const createPlayer = () => {
       if (!window.YT?.Player) return;
-      playerRef.current = new window.YT.Player(playerHost, {
+      playerRef.current = new window.YT.Player(host, {
         videoId,
         playerVars: {
           rel: 0,
@@ -52,9 +65,11 @@ function YouTubePlayer({
           start: startSeconds,
         },
         events: {
-          onStateChange: (e) => {
-            if (e.data === window.YT.PlayerState.ENDED) {
-              onEndedRef.current();
+          onStateChange: (e: YT.OnStateChangeEvent) => {
+            switch (e.data) {
+              case window.YT.PlayerState.PLAYING: onPlayingRef.current(); break;
+              case window.YT.PlayerState.PAUSED:  onPausedRef.current();  break;
+              case window.YT.PlayerState.ENDED:   onEndedRef.current();   break;
             }
           },
         },
@@ -65,16 +80,12 @@ function YouTubePlayer({
       createPlayer();
     } else {
       const prev = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        if (prev) prev();
-        createPlayer();
-      };
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); createPlayer(); };
     }
 
-    // Cleanup: destroy player then manually remove the host div
     return () => {
       try { playerRef.current?.destroy(); } catch { /* ignore */ }
-      try { if (mount.contains(playerHost)) mount.removeChild(playerHost); } catch { /* ignore */ }
+      try { if (mount.contains(host)) mount.removeChild(host); } catch { /* ignore */ }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -89,7 +100,7 @@ function YouTubePlayer({
 }
 
 // ─── VSL Section ─────────────────────────────────────────────
-export default function VSLSection({ onVideoEnded }: VSLSectionProps) {
+export default function VSLSection({ onVideoPlaying, onVideoPaused, onVideoEnded }: VSLSectionProps) {
   const [videoEnded, setVideoEnded] = useState(false);
 
   const handleEnded = useCallback(() => {
@@ -132,12 +143,13 @@ export default function VSLSection({ onVideoEnded }: VSLSectionProps) {
               <YouTubePlayer
                 videoId={SITE_CONFIG.youtubeVideoId}
                 startSeconds={SITE_CONFIG.youtubeStartSeconds}
+                onPlaying={onVideoPlaying}
+                onPaused={onVideoPaused}
                 onEnded={handleEnded}
               />
             </div>
           </div>
 
-          {/* Caption */}
           <p className="mt-5 text-center text-[13px] text-[#6e6e73] flex items-center justify-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
             Educational content only — not personalised financial advice. Trading involves substantial risk.
@@ -163,7 +175,7 @@ export default function VSLSection({ onVideoEnded }: VSLSectionProps) {
           </div>
         </div>
 
-        {/* Always-visible skip */}
+        {/* Skip link */}
         {!videoEnded && (
           <div className="mt-8 text-center">
             <button
